@@ -5,17 +5,61 @@ const playerFactory = (name, marker) => ({ name, marker });
 
 // Stores any changes to the board array
 const gameBoard = (() => {
-  const board = ['X', '', '', '', '', '', '', '', ''];
+  const board = ['', '', '', '', '', '', '', '', ''];
 
-  return { board };
+  const setCell = (index, value) => {
+    // if  array is empty at given index, mark it
+    // if valid move is made switch player
+    if (board[index] == '') {
+      board[index] = value;
+      game.switchPlayer();
+    } else {
+      console.log('pick another spot');
+    }
+  };
+
+  const resetBoard = () => {
+    for (let i = 0; i < board.length; i++) {
+      board[i] = '';
+    }
+  };
+
+  const checkWin = (marker) => {
+    // Enter all win combinations, check after each turn to see if
+    // a win has been made for currentPlayer
+
+  };
+
+  const getBoard = () => {
+    // return a copy of the board
+    const boardCopy = Array.from(board);
+    return boardCopy;
+  };
+  return { getBoard, resetBoard, setCell };
 })();
 
-// Communicates with the gameboard to make any changes / add play functionality
+// Communicates between the gameboard & DOM to make any changes / add play functionality
 const game = (() => {
   const player1 = playerFactory('User1', 'X');
   const player2 = playerFactory('User2', 'O');
+  let currentPlayer = player1;
 
-  return { player1, player2 };
+  // Get the currentPlayer value
+  const getPlayer = () => currentPlayer;
+
+  // When called swap player
+  const switchPlayer = () => {
+    if (currentPlayer === player1) {
+      currentPlayer = player2;
+      return currentPlayer;
+    } if (currentPlayer === player2) {
+      currentPlayer = player1;
+      return currentPlayer;
+    }
+  };
+  return {
+    getPlayer, switchPlayer,
+  };
 })();
 
 // Changes the DOM to reflect any changes
@@ -24,38 +68,21 @@ const displayController = (() => {
 
   // Set the board to display what the array currently has
   const displayGrid = () => {
-    for (let i = 0; i < gameBoard.board.length; i++) {
-      gridCells[i].innerText = gameBoard.board[i];
+    for (let i = 0; i < gameBoard.getBoard().length; i++) {
+      gridCells[i].innerText = gameBoard.getBoard()[i];
     }
   };
 
-  // Set the board to display what the array currently has
-  // Add click event to each button, when pressed change the cells
+  // When gridCell is clicked, call setCell given its index, and currentplayer marker
+  // find a way to switch player at this point
   gridCells.forEach((cell) => cell.addEventListener('click', () => {
+    console.log('Clicked');
     console.log(cell.dataset.index);
-    const cellIndex = cell.dataset.index;
 
-    //  When clicked, update the gameBoard.board, marking it with current player marker
-    if (gameBoard.board[cellIndex] == false) {
-      gameBoard.board[cellIndex] = currentPlayer.marker;
-    } else {
-      console.log('Pick another spot');
-    }
-
-    // Then set the cells innerText to be whatever is inside the array at that index
-    cell.innerText = gameBoard.board[cellIndex];
+    gameBoard.setCell(cell.dataset.index, game.getPlayer().marker);
+    displayGrid();
   }));
 
   // tie the index of each grid cell to the index of the gameboard array
-  return { gridCells, displayGrid };
+  return { displayGrid };
 })();
-
-const currentPlayer = game.player1;
-console.log(currentPlayer);
-const gridCells = document.querySelectorAll('.grid-cell');
-
-// Create function that goes before the one above,
-// when a gridCell is clicked, update the corresponding array index with a marker if empty
-
-// if displayController returns a cellIndex, check board to see if its empty
-// at that corresponding index

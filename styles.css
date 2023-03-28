@@ -108,17 +108,14 @@ button[class*="game"] {
     border: 3px solid black;
     justify-content: center;
     align-content: center;
-    height: 60vh;
-    width: 60vw;
-    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    grid-template: repeat(3, 150px) / repeat(3, 150px);
 } 
 
-.game-grid > div {
-    font-size: 9em;
+.game-grid > button {
+    font-size: 4em;
     border: 2px solid white;
-    background-color: gray;
 }
 
-.game-grid > div:hover {
-    background-color: rgb(165, 158, 158);
+.game-grid > button:hover {
+    background-color: rgb(197, 193, 193);
 }
