@@ -101,6 +101,11 @@ button[class*="game"] {
     font-size: .4em;
 }
 
+/* Game Message */
+.game-msg {
+    margin-bottom: 30px;
+}
+
 
 /* Game Board */
  .game-grid {
@@ -108,7 +113,7 @@ button[class*="game"] {
     border: 3px solid black;
     justify-content: center;
     align-content: center;
-    grid-template: repeat(3, 150px) / repeat(3, 150px);
+    grid-template: repeat(3, 100px) / repeat(3, 100px);
 } 
 
 .game-grid > button {
