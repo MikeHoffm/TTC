@@ -38,8 +38,8 @@ const gameBoard = (() => {
 
 // Communicates between the gameboard & DOM to make any changes / add play functionality
 const game = (() => {
-  const player1 = playerFactory('User1', 'X');
-  const player2 = playerFactory('User2', 'O');
+  const player1 = playerFactory('Player 1', 'X');
+  const player2 = playerFactory('Player 2', 'O');
   let currentPlayer = player1;
 
   // Get the currentPlayer value
@@ -57,10 +57,16 @@ const game = (() => {
   };
 
   const disableBtns = () => {
-    const btns = document.getElementsByTagName('button');
+    const btns = document.querySelectorAll('.grid-cell');
     for (let i = 0; i < btns.length; i++) {
       btns[i].disabled = true;
-      btns[i].style.backgroundColor = 'gray';
+    }
+  };
+
+  const enableBtns = () => {
+    const btns = document.querySelectorAll('.grid-cell');
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].disabled = false;
     }
   };
 
@@ -73,6 +79,7 @@ const game = (() => {
     displayController.gameMsg.innerText = 'Game Over';
     console.log('Game over');
     disableBtns();
+    displayController.displayRestart();
   };
 
   const checkWin = () => {
@@ -98,19 +105,73 @@ const game = (() => {
   };
 
   const checkTie = () => {
-    // if every gridCell is filled then it is a tie
+    const gridCells = document.querySelectorAll('.grid-cell');
+    const gridArray = Array.from(gridCells);
+    const filled = (currentValue) => currentValue.innerText != '';
+
+    if (gridArray.every(filled) === true) {
+      console.log('It\'s a tie');
+      endGame();
+    }
   };
 
   const winConditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 
   return {
-    getPlayer, switchPlayer, checkWin, winConditions, checkTie,
+    getPlayer, switchPlayer, checkWin, winConditions, checkTie, enableBtns,
   };
 })();
 
 // Changes the DOM to reflect any changes
 const displayController = (() => {
   const gridCells = document.querySelectorAll('.grid-cell');
+  const grid = document.querySelector('.game-grid');
+  const startBtn = document.querySelector('.start-btn');
+  const startMenu = document.querySelector('.start-menu');
+
+  const gameMenu = document.querySelector('.game-type-menu');
+  const pvpBtn = document.querySelector('.pvp-game');
+
+  const playerForm = document.querySelector('.player-form');
+  playerForm.style.display = 'none';
+
+  const formSubmit = document.querySelector('.submit');
+
+  const restartBtn = document.querySelector('.restart');
+
+  // when game opens, have grid hidden, when start button is pressed, display grid
+  grid.style.display = 'none';
+
+  startBtn.addEventListener('click', () => {
+    startMenu.style.display = 'none';
+    gameMenu.style.display = 'block';
+  });
+
+  pvpBtn.addEventListener('click', () => {
+    gameMenu.style.display = 'none';
+    playerForm.style.display = 'block';
+  });
+
+  const displayRestart = () => {
+    restartBtn.style.display = 'block';
+  };
+
+  const getPlayerNameInput = () => {
+    const playerOne = document.querySelector('#player1').value;
+    const playerTwo = document.querySelector('#player2').value;
+
+    const pOne = playerFactory(playerOne, 'X');
+    const pTwo = playerFactory(playerTwo, 'O');
+
+    return { pOne, pTwo };
+  };
+
+  formSubmit.addEventListener('click', () => {
+    event.preventDefault();
+    getPlayerNameInput();
+    playerForm.style.display = 'none';
+    grid.style.display = 'grid';
+  });
 
   // Set the board to display what the array currently has
   const displayGrid = () => {
@@ -128,18 +189,25 @@ const displayController = (() => {
     gameBoard.setCell(cell.dataset.index, game.getPlayer().marker);
     displayGrid();
     game.checkWin();
+    game.checkTie();
   }));
 
   const gameMsg = document.querySelector('.game-msg');
 
   const resetDOM = () => {
     gameBoard.resetBoard();
+    game.enableBtns();
     displayGrid();
   };
 
-  const restartBtn = document.querySelector('.restart');
-  restartBtn.addEventListener('click', resetDOM);
+  restartBtn.addEventListener('click', () => {
+    resetDOM();
+    restartBtn.style.display = 'none';
+    gameMsg.style.display = 'none';
+  });
 
   // tie the index of each grid cell to the index of the gameboard array
-  return { displayGrid, gameMsg };
+  return {
+    displayGrid, gameMsg, displayRestart,
+  };
 })();

@@ -124,3 +124,10 @@ button[class*="game"] {
 .game-grid > button:hover {
     background-color: rgb(197, 193, 193);
 }
+
+.restart {
+    border-radius: 15px;
+    width: 12em;
+    height: 2.5em;
+    font-size: 1em;
+}
