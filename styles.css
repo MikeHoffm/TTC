@@ -64,7 +64,6 @@
 body {
     font-family: 'VT323', monospace;
     min-height: 100vh;
-    /* border: 5px solid red; */
     display: grid;
     grid-template-rows: 1fr 10fr 1fr;
     background-color: rgba(0,128,0,.8);
@@ -72,8 +71,8 @@ body {
 
 /* Page Layout */
 header {
-    border: 3px solid green;
     font-size: 3em;
+    margin: .3em;
 }
 
 main{
@@ -82,10 +81,6 @@ main{
     justify-content: center;
     flex-direction: column;
     align-items: center;
-}
-
-footer{
-    border: 3px solid purple;
 }
 
 /* Starting Menus */
@@ -104,13 +99,13 @@ button[class*="game"] {
 /* Game Message */
 .game-msg {
     margin-bottom: 30px;
+    color: white;
 }
 
 
 /* Game Board */
  .game-grid {
     display: grid;
-    border: 3px solid black;
     justify-content: center;
     align-content: center;
     grid-template: repeat(3, 100px) / repeat(3, 100px);
@@ -127,7 +122,7 @@ button[class*="game"] {
 
 .restart {
     border-radius: 15px;
-    width: 12em;
-    height: 2.5em;
-    font-size: 1em;
+    width: 10em;
+    height: 3em;
+    margin: 3em;
 }

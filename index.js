@@ -38,10 +38,16 @@ const gameBoard = (() => {
 
 // Communicates between the gameboard & DOM to make any changes / add play functionality
 const game = (() => {
-  const player1 = playerFactory('Player 1', 'X');
-  const player2 = playerFactory('Player 2', 'O');
+  const player1 = playerFactory('playerOne', 'X');
+  const player2 = playerFactory('playerTwo', 'O');
   let currentPlayer = player1;
 
+  const playerOneScore = 0;
+  const playerTwoScore = 0;
+
+  const getScores = () => ({ playerOneScore, playerTwoScore });
+
+  const gameMsg = document.querySelector('.game-msg');
   // Get the currentPlayer value
   const getPlayer = () => currentPlayer;
 
@@ -73,11 +79,6 @@ const game = (() => {
   // function to end game, remove click functionality from all cells
   // & display winner
   const endGame = () => {
-    // if game.checkWin == true, then remove click functionality from board,
-    // display winner
-    // display restart button
-    displayController.gameMsg.innerText = 'Game Over';
-    console.log('Game over');
     disableBtns();
     displayController.displayRestart();
   };
@@ -87,20 +88,37 @@ const game = (() => {
 
     if (gridCells[0].innerText != '' && gridCells[0].innerText === gridCells[1].innerText && gridCells[1].innerText === gridCells[2].innerText) {
       endGame();
-    } else if (gridCells[3].innerText != '' && gridCells[3].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[5].innerText) {
+      const winner = gridCells[0].innerText;
+      return { winner };
+    } if (gridCells[3].innerText != '' && gridCells[3].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[5].innerText) {
+      gameMsg.innerText = `${gridCells[3].innerText} wins`;
       endGame();
-    } else if (gridCells[6].innerText != '' && gridCells[6].innerText === gridCells[7].innerText && gridCells[7].innerText === gridCells[8].innerText) {
+      const winner = gridCells[3].innerText;
+      return { winner };
+    } if (gridCells[6].innerText != '' && gridCells[6].innerText === gridCells[7].innerText && gridCells[7].innerText === gridCells[8].innerText) {
       endGame();
-    } else if (gridCells[0].innerText != '' && gridCells[0].innerText === gridCells[3].innerText && gridCells[3].innerText === gridCells[6].innerText) {
+      const winner = gridCells[6].innerText;
+      return { winner };
+    } if (gridCells[0].innerText != '' && gridCells[0].innerText === gridCells[3].innerText && gridCells[3].innerText === gridCells[6].innerText) {
       endGame();
-    } else if (gridCells[1].innerText != '' && gridCells[1].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[7].innerText) {
+      const winner = gridCells[0].innerText;
+      return { winner };
+    } if (gridCells[1].innerText != '' && gridCells[1].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[7].innerText) {
       endGame();
-    } else if (gridCells[2].innerText != '' && gridCells[2].innerText === gridCells[5].innerText && gridCells[5].innerText === gridCells[8].innerText) {
+      const winner = gridCells[1].innerText;
+      return { winner };
+    } if (gridCells[2].innerText != '' && gridCells[2].innerText === gridCells[5].innerText && gridCells[5].innerText === gridCells[8].innerText) {
       endGame();
-    } else if (gridCells[0].innerText != '' && gridCells[0].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[8].innerText) {
+      const winner = gridCells[2].innerText;
+      return { winner };
+    } if (gridCells[0].innerText != '' && gridCells[0].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[8].innerText) {
       endGame();
-    } else if (gridCells[2].innerText != '' && gridCells[2].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[6].innerText) {
+      const winner = gridCells[0].innerText;
+      return { winner };
+    } if (gridCells[2].innerText != '' && gridCells[2].innerText === gridCells[4].innerText && gridCells[4].innerText === gridCells[6].innerText) {
       endGame();
+      const winner = gridCells[2].innerText;
+      return { winner };
     }
   };
 
@@ -111,6 +129,8 @@ const game = (() => {
 
     if (gridArray.every(filled) === true) {
       console.log('It\'s a tie');
+
+      gameMsg.innerText = 'It\'s a tie.';
       endGame();
     }
   };
@@ -118,7 +138,7 @@ const game = (() => {
   const winConditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 
   return {
-    getPlayer, switchPlayer, checkWin, winConditions, checkTie, enableBtns,
+    getPlayer, switchPlayer, checkWin, winConditions, checkTie, enableBtns, getScores,
   };
 })();
 
@@ -136,6 +156,8 @@ const displayController = (() => {
   playerForm.style.display = 'none';
 
   const formSubmit = document.querySelector('.submit');
+
+  const gameMsg = document.querySelector('.game-msg');
 
   const restartBtn = document.querySelector('.restart');
 
@@ -156,21 +178,20 @@ const displayController = (() => {
     restartBtn.style.display = 'block';
   };
 
-  const getPlayerNameInput = () => {
+  const getPlayerName = () => {
     const playerOne = document.querySelector('#player1').value;
     const playerTwo = document.querySelector('#player2').value;
-
     const pOne = playerFactory(playerOne, 'X');
     const pTwo = playerFactory(playerTwo, 'O');
-
     return { pOne, pTwo };
   };
 
   formSubmit.addEventListener('click', () => {
     event.preventDefault();
-    getPlayerNameInput();
     playerForm.style.display = 'none';
     grid.style.display = 'grid';
+    getPlayerName();
+    displayPlayer();
   });
 
   // Set the board to display what the array currently has
@@ -188,26 +209,47 @@ const displayController = (() => {
 
     gameBoard.setCell(cell.dataset.index, game.getPlayer().marker);
     displayGrid();
+    displayPlayer();
     game.checkWin();
     game.checkTie();
+    displayWinner();
+    updateScore();
   }));
 
-  const gameMsg = document.querySelector('.game-msg');
-
   const resetDOM = () => {
+    gameMsg.innerText = '';
     gameBoard.resetBoard();
     game.enableBtns();
     displayGrid();
+    displayPlayer();
   };
 
   restartBtn.addEventListener('click', () => {
     resetDOM();
     restartBtn.style.display = 'none';
-    gameMsg.style.display = 'none';
   });
+
+  const displayPlayer = () => {
+    gameMsg.innerText = `${game.getPlayer().marker} make your move`;
+  };
+
+  // display a winning message for the player who wins
+  const displayWinner = () => {
+    // if checkWin returns X as winner, display getPlayerName.pOne.name, if O is winner display getPlayerName.pTwo.name
+    const winner = '';
+    if (game.checkWin().winner == 'X') {
+      gameMsg.innerText = (`${getPlayerName().pOne.marker} wins`);
+      winner = 'X';
+      return { winner };
+    } if (game.checkWin().winner == 'O') {
+      gameMsg.innerText = (`${getPlayerName().pTwo.marker} wins`);
+      winner = 'O';
+      return { winner };
+    }
+  };
 
   // tie the index of each grid cell to the index of the gameboard array
   return {
-    displayGrid, gameMsg, displayRestart,
+    displayGrid, gameMsg, displayRestart, getPlayerName, displayWinner, displayPlayer,
   };
 })();
